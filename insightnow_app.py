@@ -2,11 +2,21 @@ import streamlit as st
 from transformers import pipeline
 
 # Load models
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+
 @st.cache_resource
 def load_pipelines():
-    summarizer = pipeline("summarization", model="facebook/bart-large-cnn")
-    translator = pipeline("translation", model="Helsinki-NLP/opus-mt-en-fr")  # EN → FR
+    # Summarization pipeline
+    summarizer = pipeline("summarization")
+
+    # Translation pipeline (EN → FR)
+    model_name = "Helsinki-NLP/opus-mt-en-fr"
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+    translator = pipeline("translation_en_to_fr", model=model, tokenizer=tokenizer)
+
     return summarizer, translator
+
 
 summarizer, translator = load_pipelines()
 
